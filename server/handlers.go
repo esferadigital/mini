@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/esfxra/mini/shortener"
+	"github.com/esferachill/mini/shortener"
 )
 
 type ShortenRequest struct {

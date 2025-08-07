@@ -1,6 +1,6 @@
 package repo
 
-import "github.com/esfxra/mini/entities"
+import "github.com/esferachill/mini/entities"
 
 type LinkStorage interface {
 	GetLink(key string) (entities.Link, bool)

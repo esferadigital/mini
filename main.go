@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 
-	"github.com/esfxra/mini/infra"
-	"github.com/esfxra/mini/repo"
-	"github.com/esfxra/mini/server"
+	"github.com/esferachill/mini/infra"
+	"github.com/esferachill/mini/repo"
+	"github.com/esferachill/mini/server"
 )
 
 func main() {

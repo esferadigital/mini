@@ -1,7 +1,7 @@
 package shortener
 
 import (
-	"github.com/esfxra/mini/repo"
+	"github.com/esferachill/mini/repo"
 )
 
 func Shorten(linkRepo *repo.LinkRepository, url string) string {

@@ -3,7 +3,7 @@ package infra
 import (
 	"sync"
 
-	"github.com/esfxra/mini/entities"
+	"github.com/esferachill/mini/entities"
 )
 
 type Memory struct {
