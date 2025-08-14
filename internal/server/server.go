@@ -3,29 +3,30 @@ package server
 import (
 	"fmt"
 	"net/http"
-
-	"github.com/esferachill/mini/repo"
 )
 
 type Server struct {
-	port     int
-	linkRepo *repo.LinkRepository
+	port int
 }
 
-func NewServer(port int, linkRepo *repo.LinkRepository) *Server {
+func NewServer(port int) *Server {
 	return &Server{
-		port:     port,
-		linkRepo: linkRepo,
+		port: port,
 	}
 }
 
 func (s *Server) Start() error {
-	http.HandleFunc("/shorten", s.ShortenLink)
-	http.HandleFunc("/", s.ServeLink)
+	http.HandleFunc("/health", health)
+	http.HandleFunc("/shorten", s.Shorten)
+	http.HandleFunc("/", s.Redirect)
 
 	httpServer := &http.Server{
 		Addr:    fmt.Sprintf(":%d", s.port),
 		Handler: http.DefaultServeMux,
 	}
 	return httpServer.ListenAndServe()
+}
+
+func health(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "OK")
 }

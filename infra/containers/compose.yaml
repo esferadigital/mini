@@ -1,0 +1,65 @@
+name: mini
+
+services:
+  db:
+    image: docker.io/library/postgres:17
+    container_name: mini-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: adminpass
+      POSTGRES_DB: mini_db
+    ports: ["5432:5432"]
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d mini_db"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+    networks:
+      - mini
+
+  migrate: # one-shot migrations using goose
+    image: docker.io/library/golang:1.24
+    container_name: mini-migrate
+    depends_on:
+      db:
+        condition: service_healthy
+    working_dir: /app
+    environment:
+      DSN: postgres://admin:adminpass@db:5432/mini_db?sslmode=disable
+    volumes:
+      - ../../:/app
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -euo pipefail
+        go install -v github.com/pressly/goose/v3/cmd/goose@latest
+        goose -dir infra/migrations postgres "$DSN" up
+    restart: "no"
+    networks:
+      - mini
+
+  api:
+    build:
+      context: ../../
+      dockerfile: infra/containers/Containerfile
+    container_name: mini-api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DSN: postgres://admin:adminpass@db:5432/mini_db?sslmode=disable
+    ports: ["8080:8080"]
+    volumes:
+      - ../../:/app
+    command: ["air", "-c", ".air.toml"]
+    networks:
+      - mini
+
+volumes:
+  db_data:
+
+networks:
+  mini:
+    driver: bridge

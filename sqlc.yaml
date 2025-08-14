@@ -1,0 +1,12 @@
+version: "2"
+sql:
+  - schema: "infra/migrations"
+    queries: "internal/queries"
+    engine: "postgresql"
+    gen:
+      go:
+        package: "repo"
+        out: "internal/repo"
+        sql_package: "pgx/v5"
+        emit_interface: true # generates a Querier interface and a DBTX-compatible New()
+        json_tags_case_style: "snake"

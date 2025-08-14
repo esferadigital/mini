@@ -4,9 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 
-	"github.com/esferachill/mini/shortener"
+	"github.com/esferachill/mini/internal/services"
 )
 
 type ShortenRequest struct {
@@ -18,7 +17,7 @@ type ShortenResponse struct {
 	ShortURL  string `json:"short_url"`
 }
 
-func (s *Server) ShortenLink(w http.ResponseWriter, r *http.Request) {
+func (s *Server) Shorten(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -35,7 +34,7 @@ func (s *Server) ShortenLink(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	shortCode := shortener.Shorten(s.linkRepo, req.URL)
+	shortCode := services.Shorten(req.URL)
 
 	response := ShortenResponse{
 		ShortCode: shortCode,
@@ -44,33 +43,4 @@ func (s *Server) ShortenLink(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
-}
-
-func (s *Server) ServeLink(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	path := strings.TrimPrefix(r.URL.Path, "/")
-
-	// Handle root path
-	if path == "" {
-		w.Write([]byte("Mini URL Shortener Service"))
-		return
-	}
-
-	// Handle favicon requests
-	if path == "favicon.ico" {
-		http.NotFound(w, r)
-		return
-	}
-
-	originalURL, exists := shortener.GetOriginalURL(s.linkRepo, path)
-	if !exists {
-		http.NotFound(w, r)
-		return
-	}
-
-	http.Redirect(w, r, originalURL, http.StatusMovedPermanently)
 }
