@@ -9,15 +9,7 @@ Reference implementation of a basic URL shortener service with Go.
 
 **Short URL generation**
 
-The URL shortener assigns each new URL a sequential ID number (1, 2, 3...), then encodes that number into a short code. This approach ensures every short code is unique since the counter only moves forward.
-
-**Flow**
-
-1. New URL arrives → Counter increments (e.g., from 42 to 43)
-2. ID gets encoded → Produces short code (e.g., "aB3x")
-3. Short code maps to original URL in storage
-
-This mimics how database auto-increment IDs work, but keeps everything in memory for simplicity.
+The `crypto/rand` package is used to generate a cryptographically secure random number, which is then encoded into a short code. For instance, a short URL with the current length of `6` looks like `XCE7koad`.
 
 ## Tools
 ```bash
