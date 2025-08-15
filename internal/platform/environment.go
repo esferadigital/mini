@@ -3,24 +3,32 @@ package platform
 import (
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 )
 
 type Environment struct {
-	DSN string
+	DatabaseURL string
+	Port        int
 }
 
 func NewEnvironment() *Environment {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Printf("Could not load .env file: %v", err)
 	}
 
-	dsn := required("DSN")
+	databaseURL := required("DATABASE_URL")
+
+	port, err := strconv.Atoi(required("PORT"))
+	if err != nil {
+		log.Fatalf("Invalid PORT value: %s", err)
+	}
 
 	return &Environment{
-		DSN: dsn,
+		DatabaseURL: databaseURL,
+		Port:        port,
 	}
 }
 

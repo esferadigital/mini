@@ -8,7 +8,7 @@ migrate-local-database:
     goose -dir infra/migrations postgres://admin:adminpass@localhost:5432/mini_db up
 
 dev-up:
-    podman compose -f infra/containers/compose.yaml up -d
+    podman compose -f infra/containers/local/compose.yaml up -d
 
 dev-down:
-    podman compose -f infra/containers/compose.yaml down
+    podman compose -f infra/containers/local/compose.yaml down

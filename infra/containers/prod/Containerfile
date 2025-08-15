@@ -1,0 +1,49 @@
+# Build stage
+FROM docker.io/library/golang:1.24 AS builder
+
+WORKDIR /app
+
+# Copy go mod and sum files
+COPY go.mod go.sum ./
+
+# Download dependencies
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+# Build the application
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main cmd/main.go
+
+# Install goose for migrations
+RUN go install -v github.com/pressly/goose/v3/cmd/goose@latest
+
+# Runtime stage using slim debian
+FROM docker.io/library/debian:12-slim
+
+WORKDIR /app
+
+# Install runtime dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy the binary from builder stage
+COPY --from=builder /app/main .
+
+# Copy goose binary from builder stage
+COPY --from=builder /go/bin/goose /usr/local/bin/goose
+
+# Copy migration files
+COPY infra/migrations ./infra/migrations
+
+# Copy entrypoint script
+COPY infra/containers/prod/entrypoint.sh ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
+
+# Expose port (will be set by Dokku via PORT env var)
+EXPOSE 5000
+
+# Run migrations and then start the app
+ENTRYPOINT ["./entrypoint.sh"]

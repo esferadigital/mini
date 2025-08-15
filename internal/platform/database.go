@@ -10,7 +10,7 @@ import (
 )
 
 type DatabaseConfig struct {
-	DSN string
+	DatabaseURL string
 
 	// Pool sizing
 	// MinConns int32
@@ -36,10 +36,10 @@ type DatabaseClient struct {
 }
 
 func NewDatabaseClient(config DatabaseConfig) (*DatabaseClient, error) {
-	if config.DSN == "" {
-		return nil, errors.New("DSN is required")
+	if config.DatabaseURL == "" {
+		return nil, errors.New("DatabaseURL is required")
 	}
-	conn, err := pgxpool.ParseConfig(config.DSN)
+	conn, err := pgxpool.ParseConfig(config.DatabaseURL)
 	if err != nil {
 		return nil, fmt.Errorf("Parse config: %w", err)
 	}

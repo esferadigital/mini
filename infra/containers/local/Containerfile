@@ -1,0 +1,27 @@
+FROM docker.io/library/golang:1.24
+
+WORKDIR /app
+
+# Install air for live reloading
+RUN go install github.com/air-verse/air@latest
+
+# Install goose for migrations
+RUN go install -v github.com/pressly/goose/v3/cmd/goose@latest
+
+# Copy Go module files first for better caching
+COPY go.mod go.sum ./
+
+# Download dependencies
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+# Copy entrypoint script to root and make it executable
+COPY infra/containers/local/entrypoint.sh ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
+
+EXPOSE 8080
+
+# Use development entrypoint that runs migrations then starts air
+ENTRYPOINT ["./entrypoint.sh"]

@@ -1,0 +1,44 @@
+name: mini
+
+services:
+  db:
+    image: docker.io/library/postgres:17
+    container_name: mini-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: adminpass
+      POSTGRES_DB: mini_db
+    ports: ["5432:5432"]
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d mini_db"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+    networks:
+      - mini
+
+  api:
+    build:
+      context: ../../../
+      dockerfile: infra/containers/local/Containerfile
+    container_name: mini-api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://admin:adminpass@db:5432/mini_db?sslmode=disable
+      PORT: 8080
+    ports: ["8080:8080"]
+    volumes:
+      - ../../../:/app
+    networks:
+      - mini
+
+volumes:
+  db_data:
+
+networks:
+  mini:
+    driver: bridge

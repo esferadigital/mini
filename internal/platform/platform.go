@@ -19,7 +19,7 @@ func newPlatform() *Platform {
 	env := NewEnvironment()
 
 	dbConfig := DatabaseConfig{
-		DSN: env.DSN,
+		DatabaseURL: env.DatabaseURL,
 	}
 
 	dbClient, err := NewDatabaseClient(dbConfig)

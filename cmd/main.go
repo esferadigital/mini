@@ -8,8 +8,8 @@ import (
 )
 
 func main() {
-	platform.GetPlatform()
-	server := server.NewServer(8080)
+	platform := platform.GetPlatform()
+	server := server.NewServer(platform.Env.Port)
 
 	log.Println("Starting Mini URL Shortener on :8080")
 	if err := server.Start(); err != nil {
