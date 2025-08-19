@@ -12,3 +12,6 @@ dev-up:
 
 dev-down:
     podman compose -f infra/containers/local/compose.yaml down
+
+generate-sql:
+    sqlc generate
