@@ -35,11 +35,13 @@ sudo pacman -S just
 # Run the program with a local database container
 just dev-up
 
-# Run the program with a database you already have the credentials for
-just run
+# Listen to logs
+podman logs mini-api -f
 
 # Create a short URL:
 curl -X POST http://localhost:8080/shorten -d '{ "url": "https://www.theverge.com/openai/718785/openai-gpt-oss-open-model-release" }'
 ```
 
 Then visit the short URL returned by the program in your browser.
+
+> You could also run the program with a database you already have the credentials for with `just run`
