@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/esferachill/mini/internal/platform"
 	"github.com/esferachill/mini/internal/services"
 )
 
@@ -18,6 +19,8 @@ type ShortenResponse struct {
 }
 
 func (s *Server) Shorten(w http.ResponseWriter, r *http.Request) {
+	env := platform.GetPlatform().Env
+
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -35,10 +38,11 @@ func (s *Server) Shorten(w http.ResponseWriter, r *http.Request) {
 	}
 
 	shortCode := services.Shorten(req.URL)
+	shortURL := fmt.Sprintf("%s://%s:%d/%s", env.HostScheme, env.Host, env.Port, shortCode)
 
 	response := ShortenResponse{
 		ShortCode: shortCode,
-		ShortURL:  fmt.Sprintf("http://localhost:8080/%s", shortCode),
+		ShortURL:  shortURL,
 	}
 
 	w.Header().Set("Content-Type", "application/json")

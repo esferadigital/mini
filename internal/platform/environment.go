@@ -11,6 +11,8 @@ import (
 type Environment struct {
 	DatabaseURL string
 	Port        int
+	Host        string
+	HostScheme  string
 }
 
 func NewEnvironment() *Environment {
@@ -26,9 +28,14 @@ func NewEnvironment() *Environment {
 		log.Fatalf("Invalid PORT value: %s", err)
 	}
 
+	host := required("HOST")
+	hostScheme := required("HOST_SCHEME")
+
 	return &Environment{
 		DatabaseURL: databaseURL,
 		Port:        port,
+		Host:        host,
+		HostScheme:  hostScheme,
 	}
 }
 
