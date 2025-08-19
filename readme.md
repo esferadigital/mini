@@ -19,6 +19,9 @@ go install github.com/pressly/goose/v3/cmd/goose@latest
 # sqlc - to generate models and queries
 go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 
+# templ - to generate html from templates
+go install github.com/a-h/templ/cmd/templ@latest
+
 # podman - for containerization
 sudo pacman -S podman podman-compose
 

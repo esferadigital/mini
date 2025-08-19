@@ -1,8 +1,10 @@
 name: mini
 
+x-repo-root: &repo_root ../../..
+
 services:
   db:
-    image: docker.io/library/postgres:17
+    image: docker.io/library/postgres:17.6-trixie
     container_name: mini-db
     environment:
       POSTGRES_USER: admin
@@ -20,8 +22,9 @@ services:
       - mini
 
   api:
+    image: mini-api
     build:
-      context: ../../../
+      context: *repo_root
       dockerfile: infra/containers/local/Containerfile
     container_name: mini-api
     depends_on:
@@ -34,7 +37,7 @@ services:
       HOST_SCHEME: http
     ports: ["8080:8080"]
     volumes:
-      - ../../../:/app
+      - ../../..:/app
     networks:
       - mini
 

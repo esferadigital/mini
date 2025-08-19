@@ -3,6 +3,9 @@ package server
 import (
 	"fmt"
 	"net/http"
+
+	"github.com/a-h/templ"
+	"github.com/esferachill/mini/internal/components"
 )
 
 type Server struct {
@@ -18,7 +21,12 @@ func NewServer(port int) *Server {
 func (s *Server) Start() error {
 	http.HandleFunc("/health", health)
 	http.HandleFunc("/shorten", s.Shorten)
+	http.HandleFunc("/shorten-submit", s.ShortenSubmit)
 	http.HandleFunc("/", s.Redirect)
+
+	// Site
+	home := components.Home()
+	http.Handle("/home", templ.Handler(home))
 
 	httpServer := &http.Server{
 		Addr:    fmt.Sprintf(":%d", s.port),
