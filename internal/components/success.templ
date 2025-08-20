@@ -20,8 +20,8 @@ templ Success(shortURL string) {
 				font-weight: 500;
 				font-size: 1.1rem;
 			">Success! Here is your shortened URL:</p>
-			<p style="margin: 0;">
-				<a href={shortURL} style="
+			<div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; flex-wrap: wrap;">
+				<a href={shortURL} id="shortUrl" style="
 					display: inline-block;
 					padding: 0.75rem 1.5rem;
 					border-radius: 0.5rem;
@@ -36,7 +36,95 @@ templ Success(shortURL string) {
 					transition: all 0.2s ease;
 				" onMouseOver="this.style.background='rgba(156, 163, 175, 0.3)'; this.style.transform='translateY(-1px)'"
 				onMouseOut="this.style.background='rgba(156, 163, 175, 0.2)'; this.style.transform='translateY(0)'">{shortURL}</a>
-			</p>
+
+				<button id="copyButton" onclick="copyToClipboard()" style="
+					padding: 0.75rem 1.5rem;
+					border: none;
+					border-radius: 0.5rem;
+					background: rgba(34, 197, 94, 0.2);
+					backdrop-filter: blur(10px);
+					-webkit-backdrop-filter: blur(10px);
+					border: 1px solid rgba(34, 197, 94, 0.3);
+					color: #374151;
+					font-weight: 600;
+					cursor: pointer;
+					box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+					transition: all 0.2s ease;
+				" onMouseOver="this.style.background='rgba(34, 197, 94, 0.3)'; this.style.transform='translateY(-1px)'"
+				onMouseOut="this.style.background='rgba(34, 197, 94, 0.2)'; this.style.transform='translateY(0)'">
+					Copy to Clipboard
+				</button>
+			</div>
+
+			<div id="feedbackMessage" role="status" aria-live="polite" style="
+				margin-top: 1rem;
+				color: #059669;
+				font-weight: 500;
+				font-size: 0.9rem;
+				opacity: 0;
+				transition: opacity 0.3s ease;
+			"></div>
+
+			<script>
+				function copyToClipboard() {
+					const shortUrlElement = document.getElementById('shortUrl');
+					const copyButton = document.getElementById('copyButton');
+					const feedbackMessage = document.getElementById('feedbackMessage');
+					const originalButtonText = copyButton.textContent;
+
+					if (navigator.clipboard && window.isSecureContext) {
+						navigator.clipboard.writeText(shortUrlElement.textContent).then(() => {
+							showSuccess();
+						}).catch(() => {
+							fallbackCopy();
+						});
+					} else {
+						fallbackCopy();
+					}
+
+					function showSuccess() {
+						copyButton.textContent = 'Copied!';
+						copyButton.style.background = 'rgba(34, 197, 94, 0.4)';
+						feedbackMessage.textContent = 'URL copied to clipboard!';
+						feedbackMessage.style.opacity = '1';
+
+						setTimeout(() => {
+							copyButton.textContent = originalButtonText;
+							copyButton.style.background = 'rgba(34, 197, 94, 0.2)';
+							feedbackMessage.style.opacity = '0';
+						}, 2000);
+					}
+
+					function fallbackCopy() {
+						const textArea = document.createElement('textarea');
+						textArea.value = shortUrlElement.textContent;
+						textArea.style.position = 'fixed';
+						textArea.style.left = '-999999px';
+						textArea.style.top = '-999999px';
+						document.body.appendChild(textArea);
+						textArea.focus();
+						textArea.select();
+
+						try {
+							document.execCommand('copy');
+							showSuccess();
+						} catch (err) {
+							copyButton.textContent = 'Copy Failed';
+							feedbackMessage.textContent = 'Could not copy URL. Please copy manually.';
+							feedbackMessage.style.color = '#dc2626';
+							feedbackMessage.style.opacity = '1';
+
+							setTimeout(() => {
+								copyButton.textContent = originalButtonText;
+								feedbackMessage.style.opacity = '0';
+								feedbackMessage.style.color = '#059669';
+							}, 3000);
+						}
+
+						document.body.removeChild(textArea);
+					}
+				}
+			</script>
 		</div>
 	}
 }
