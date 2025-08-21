@@ -3,6 +3,7 @@ package server
 import (
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/esferachill/mini/internal/services"
 )
@@ -32,6 +33,11 @@ func (s *Server) Redirect(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
+
+	// Record the visit
+	userAgent := r.Header.Get("User-Agent")
+	occurredAt := time.Now()
+	services.RecordVisit(path, userAgent, occurredAt)
 
 	http.Redirect(w, r, targetURL, http.StatusMovedPermanently)
 }

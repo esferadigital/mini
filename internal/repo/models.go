@@ -15,3 +15,10 @@ type ShortUrl struct {
 	CreatedAt pgtype.Timestamptz
 	UpdatedAt pgtype.Timestamptz
 }
+
+type Visit struct {
+	ID         int64
+	ShortUrlID int64
+	OccurredAt pgtype.Timestamptz
+	UserAgent  pgtype.Text
+}

@@ -10,6 +10,7 @@ import (
 
 type Querier interface {
 	CreateShortURL(ctx context.Context, arg CreateShortURLParams) (ShortUrl, error)
+	CreateVisit(ctx context.Context, arg CreateVisitParams) (Visit, error)
 	GetShortURL(ctx context.Context, id int64) (ShortUrl, error)
 	GetShortURLBySlug(ctx context.Context, slug string) (ShortUrl, error)
 }
